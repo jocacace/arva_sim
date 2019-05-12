@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="artva_macro">
+    <link name="receiver">
+		  <collision>
+		    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+		    <geometry>
+		      <box size="0.05 0.05 0.05"/>
+		    </geometry>
+		  </collision>
+
+		  <visual>
+		    <origin xyz="0 0 0.0" rpy="0 0 0"/>
+		    <geometry>
+		      <box size="0.05 0.05 0.05"/>
+		    </geometry>
+		    <material name="orange"/>
+		  </visual>
+
+		  <inertial>
+		    <origin xyz="0 0 1" rpy="0 0 0"/>
+		    <mass value="1"/>
+		    <inertia
+		      ixx="1.0" ixy="0.0" ixz="0.0"
+		      iyy="1.0" iyz="0.0"
+		      izz="1.0"/>
+		  </inertial>
+		</link>
+ 		<joint name="receiver_joint" type="fixed">
+      <!--<xacro:insert_block name="origin" />-->
+      <parent link="base_link" />
+      <child link="receiver" />
+    </joint>
+
+		<material name="orange">
+		  <color rgba="${255/255} ${108/255} ${10/255} 1.0"/>
+		</material>
+	 
+		<gazebo reference="receiver">
+		  <material>Gazebo/Orange</material>
+		</gazebo>		
+
+		<gazebo>
+			<plugin filename="libartva_gazebo_plugin_receiver.so" name="receiver">
+				<channels>1</channels>
+				<frame_id>artva</frame_id>
+		  </plugin>
+		</gazebo>
+  </xacro:macro>
+	<!-- Base Link -->
+  
+</robot>
+

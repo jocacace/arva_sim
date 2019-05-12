@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<robot name="receiver" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="channels" default="4" />
+	<xacro:arg name="frame_id" default="arva" />
+	
+	<!-- Base Link -->
+  <link name="receiver">
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 1" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+
+  <material name="orange">
+    <color rgba="${255/255} ${108/255} ${10/255} 1.0"/>
+  </material>
+ 
+	<gazebo reference="receiver">
+    <material>Gazebo/Orange</material>
+  </gazebo>		
+
+	<gazebo>
+	  <plugin filename="libarva_sim_receiver.so" name="receiver">
+			<channels>$(arg channels)</channels>
+			<frame_id>$(arg frame_id)</frame_id>
+    </plugin>
+  </gazebo>
+</robot>
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<launch>
+
+	<!--
+	<param name="robot_description" command="$(find xacro)/xacro  $(find artva_gazebo_plugin)/urdf/transmitter.urdf.xacro id:=1313"/>
+	<node name="spawn_artva_0" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 0.0 -y 0.0 -z 0.0 -model artva0" 	respawn="false" output="screen">
+	</node>
+	-->
+	<param name="robot_description" command="$(find xacro)/xacro --inorder  $(find arva_sim)/urdf/transmitter.urdf.xacro id:=1"/>
+	<node name="spawn_artva_1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 1.0 -y 0.0 -z 0.0 -model artva1" 	respawn="false" output="screen">
+	</node>
+
+<!--
+	<param name="robot_description" command="$(find xacro)/xacro  $(find artva_gazebo_plugin)/urdf/transmitter.urdf.xacro id:=2"/>
+	<node name="spawn_artva_2" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 0.0 -y 10.0 -z 0.1 -model artva2" 	respawn="false" output="screen">
+	</node>
+
+	<param name="robot_description" command="$(find xacro)/xacro  $(find artva_gazebo_plugin)/urdf/transmitter.urdf.xacro id:=3"/>
+	<node name="spawn_artva_3" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 10.0 -y 10.0 -z 0.1 -model artva3" 	respawn="false" output="screen">
+	</node>
+
+	<param name="robot_description" command="$(find xacro)/xacro  $(find artva_gazebo_plugin)/urdf/transmitter.urdf.xacro id:=4"/>
+	<node name="spawn_artva_4" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x -10.0 -y -10.0 -z 0.1 -model artva4" 	respawn="false" output="screen">
+	</node>
+
+	<param name="robot_description" command="$(find xacro)/xacro  $(find artva_gazebo_plugin)/urdf/transmitter.urdf.xacro id:=5"/>
+	<node name="spawn_artva_5" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 50.0 -y 50.0 -z 0.1 -model artva5" 	respawn="false" output="screen">
+	</node>
+-->
+
+
+</launch>
