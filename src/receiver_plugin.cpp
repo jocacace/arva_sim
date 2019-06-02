@@ -371,12 +371,14 @@ namespace gazebo
 			vector <arva_sim::arva_data> swap_arva;
 			for(int i=0; i<_arva_sensors.size(); i++ ) {
 				get_arva_data( _arva_sensors[i].p, _arva_sensors[i].R, _receiver_pos, Rt, Hb, d, delta);
-				arva_sim::arva_data sig;
-				sig.id = _arva_sensors[i].id;
-				sig.distance = d;
-				sig.direction.x = Hb[0]; sig.direction.y = Hb[1]; sig.direction.z = Hb[2];
-				swap_arva.push_back(sig);
-				sensors_map.insert ( std::pair<int,float>(_arva_sensors[i].id, d ) );
+				if( d >= 0 ) {
+					arva_sim::arva_data sig;
+					sig.id = _arva_sensors[i].id;
+					sig.distance = d;
+					sig.direction.x = Hb[0]; sig.direction.y = Hb[1]; sig.direction.z = Hb[2];
+					swap_arva.push_back(sig);
+					sensors_map.insert ( std::pair<int,float>(_arva_sensors[i].id, d ) );
+				}
 			}
 
 			std::set<std::pair<int, float>, comp> set(sensors_map.begin(), sensors_map.end());
