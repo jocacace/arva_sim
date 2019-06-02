@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<launch>
-
-	<param name="robot_description" command="$(find xacro)/xacro  $(find artva_gazebo_plugin)/urdf/transmitter.urdf.xacro id:=3"/>
-	<node name="spawn_artva_2" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 0.0 -y 10.0 -z 0.0 -model artva3" 	respawn="false" output="screen">
-	</node>
-
-
-</launch>

@@ -47,14 +47,16 @@ namespace gazebo
 		private: clock_t begin; 
 		private: math::Pose _obj_pose;
   	private: physics::ModelPtr model;
-		private: string _topic_name;
+		private: string _child_frame;
+		private: string _frame_id;
     private: event::ConnectionPtr updateConnection;
 
 		public: void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf) {	
 			_node_handle = new ros::NodeHandle();	
 			this->updateConnection = event::Events::ConnectWorldUpdateBegin(std::bind(&ArtvaTransmitter::OnUpdate, this));
 			model = _parent;
- 			_topic_name = "arva_data_" + std::to_string(_sdf->Get<int>("id"));
+ 			_child_frame = "arva_data_" + std::to_string(_sdf->Get<int>("id"));
+			_frame_id = _sdf->Get<string>("frame_id");
   		begin = clock();
 		}
 
@@ -70,7 +72,7 @@ namespace gazebo
 				tf::Quaternion q;
 				q.setRPY(_obj_pose.rot.GetRoll(), _obj_pose.rot.GetPitch(), _obj_pose.rot.GetYaw());
 				transform.setRotation(q);
-				br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", _topic_name));
+				br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), _frame_id, _child_frame));
 				begin = clock();
 			}
 		}

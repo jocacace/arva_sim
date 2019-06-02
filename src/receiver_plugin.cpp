@@ -53,6 +53,8 @@
 
 using namespace std;
 
+#define SIMULATE_TRACE 1
+
 using Eigen::MatrixXd;
 using namespace Eigen;
 
@@ -177,9 +179,8 @@ namespace gazebo
 			
 			Vector3f m_vec(1.0, 0.0, 0.0);
 
-
 			m_vec = Rt*m_vec;
-			float r_noise = 50; //% [m] 50 std //TODO: param
+			float r_noise = 50; //% [m] 50 
 			float n_H_noise = 1 / pow(r_noise, 3) * (1 / (4*M_PI))*1.5420;
 		
 			Vector3f r;
@@ -206,6 +207,7 @@ namespace gazebo
 		
 			float d1 = powf( (1.0/fabs(Hb[0])*(1.0/(4.0*M_PI))*1.5420), 0.33);
 			float d3 = powf( (1.0/Hb.norm()*(1.0/(4.0*M_PI))*1.5420), 0.33);
+
 
 			if ( d3 <= 3.0 ) {
 				d = d3;
@@ -272,10 +274,11 @@ namespace gazebo
 
 	public: void tf_cb( tf2_msgs::TFMessage tf_data ) {
 
-
+		bool arva_found = false;
 		for( int i=0; i<_arva_sensors.size(); i++ ) 
 			_arva_sensors[i].updated = false;
 
+		
 		for( int i=0; i<_detected_arva.arva_signals.size(); i++ ) {
 			_detected_arva.arva_signals[i].id = -1;
 			_detected_arva.arva_signals[i].direction.x = -1;
@@ -286,14 +289,14 @@ namespace gazebo
 		_arva_marker.markers.clear();
 
 		for(int i=0; i<tf_data.transforms.size(); i++ ) {
-
+		
 		
 			vector<string> result; 
 			std::size_t found = tf_data.transforms[i].child_frame_id.find("arva_data_");
 			if (found!=std::string::npos) {
 				boost::split(result, tf_data.transforms[i].child_frame_id, boost::is_any_of("_"));
 				
-				if( result.size() == 3 ) {
+				if( result.size() == 3 ) {		
 
 					stringstream ss(result[result.size()-1]);
 					int id = 0; 
@@ -337,87 +340,95 @@ namespace gazebo
 						_arva_sensors[el_id].updated = true;
 						_arva_sensors[el_id].R = q.normalized().toRotationMatrix();						
 					}
+					arva_found = true;		
 				}
 			}
 		}
-
 	
+		if( arva_found ) {
 
-		//Elab data
-		_obj_pose = this->model->GetWorldPose();
+			//Elab data
+			_obj_pose = this->model->GetWorldPose();
 
-		//---Receiver pose
-		_receiver_pos[0] = _obj_pose.pos.x;
-		_receiver_pos[1] = _obj_pose.pos.y;
-		_receiver_pos[2] = _obj_pose.pos.z;
-		float roll = _obj_pose.rot.GetRoll();
-		float pitch = _obj_pose.rot.GetPitch();
-		float yaw = _obj_pose.rot.GetYaw();
-		Quaternionf q;
-		q = AngleAxisf(roll, Vector3f::UnitX()) * AngleAxisf(pitch, Vector3f::UnitY()) * AngleAxisf(yaw, Vector3f::UnitZ());
-		Eigen::Matrix3f Rt = q.normalized().toRotationMatrix();
-		//---
+			//---Receiver pose
+			_receiver_pos[0] = _obj_pose.pos.x;
+			_receiver_pos[1] = _obj_pose.pos.y;
+			_receiver_pos[2] = _obj_pose.pos.z;
+			float roll = _obj_pose.rot.GetRoll();
+			float pitch = _obj_pose.rot.GetPitch();
+			float yaw = _obj_pose.rot.GetYaw();
+			Quaternionf q;
+			q = AngleAxisf(roll, Vector3f::UnitX()) * AngleAxisf(pitch, Vector3f::UnitY()) * AngleAxisf(yaw, Vector3f::UnitZ());
+			Eigen::Matrix3f Rt = q.normalized().toRotationMatrix();
+			//---
 
-		Vector3f Hb;
-		float d;
-		float  delta;
-		std::map<int, float> sensors_map;
+			Vector3f Hb;
+			float d;
+			float  delta;
+			std::map<int, float> sensors_map;
 
-		//Calculate all the magnetic field flows
-		vector <arva_sim::arva_data> swap_arva;
-		for(int i=0; i<_arva_sensors.size(); i++ ) {
-			get_arva_data( _arva_sensors[i].p, _arva_sensors[i].R, _receiver_pos, Rt, Hb, d, delta);
-			arva_sim::arva_data sig;
-			sig.id = _arva_sensors[i].id;
-			sig.distance = d;
-			sig.direction.x = Hb[0]; sig.direction.y = Hb[1]; sig.direction.z = Hb[2];
-			swap_arva.push_back(sig);
-			sensors_map.insert ( std::pair<int,float>(_arva_sensors[i].id, d ) );
-		}
-
-		std::set<std::pair<int, float>, comp> set(sensors_map.begin(), sensors_map.end());
-		int n_elem = 0;
-		for (auto const &pair: set) {
-			if ( n_elem < _channels ) {
-				for(int i=0; i<swap_arva.size(); i++) {
-					if( swap_arva[i].id == pair.first ) {
-						_detected_arva.arva_signals[n_elem] = swap_arva[i];
-					}
-				}
-				n_elem++;	 
-			}		
-			else 
-				continue;
-		}
-
-		_detected_arva.header.seq = _seq++;
-		_detected_arva.header.stamp = ros::Time::now();
-		_detected_arva.header.frame_id = _frame_id;
-
-
-
-		for( int i=0; i<_detected_arva.arva_signals.size(); i++ ) {	
-			if( _detected_arva.arva_signals[i].id != -1 ) {
-				_arva_marker.markers.push_back( create_arrow_marker( i, _receiver_pos, _detected_arva.arva_signals[i].direction ) );
+			//Calculate all the magnetic field flows
+			vector <arva_sim::arva_data> swap_arva;
+			for(int i=0; i<_arva_sensors.size(); i++ ) {
+				get_arva_data( _arva_sensors[i].p, _arva_sensors[i].R, _receiver_pos, Rt, Hb, d, delta);
+				arva_sim::arva_data sig;
+				sig.id = _arva_sensors[i].id;
+				sig.distance = d;
+				sig.direction.x = Hb[0]; sig.direction.y = Hb[1]; sig.direction.z = Hb[2];
+				swap_arva.push_back(sig);
+				sensors_map.insert ( std::pair<int,float>(_arva_sensors[i].id, d ) );
 			}
-		}
+
+			std::set<std::pair<int, float>, comp> set(sensors_map.begin(), sensors_map.end());
+			int n_elem = 0;
+			for (auto const &pair: set) {
+				if ( n_elem < _channels ) {
+					for(int i=0; i<swap_arva.size(); i++) {
+						if( swap_arva[i].id == pair.first ) {
+							_detected_arva.arva_signals[n_elem] = swap_arva[i];
+						}
+					}
+					n_elem++;	 
+				}		
+				else 
+					continue;
+			}
+
+			_detected_arva.header.seq = _seq++;
+			_detected_arva.header.stamp = ros::Time::now();
+			_detected_arva.header.frame_id = _frame_id;
 
 
-		_arva_marker_pub.publish( _arva_marker );
-		_arva_pub.publish( _detected_arva );
-		_new_s_data = true;
 
-		for( int i=0; i<_arva_sensors.size(); i++ ) {	
-			if( !_arva_sensors[i].updated )
-				_arva_sensors.erase( _arva_sensors.begin()+i);
+			for( int i=0; i<_detected_arva.arva_signals.size(); i++ ) {	
+				if( _detected_arva.arva_signals[i].id != -1 ) {
+					_arva_marker.markers.push_back( create_arrow_marker( i, _receiver_pos, _detected_arva.arva_signals[i].direction ) );
+				}
+			}
+
+
+			_arva_marker_pub.publish( _arva_marker );
+
+			_arva_pub.publish( _detected_arva );
+			_new_s_data = true;
+
+			
 		}
 	}
+
 
 	// Called by the world update start event
 	public: void loop() {
 	
 		clock_t end = clock(); //elapsed time
 		if( (double(end - begin) / CLOCKS_PER_SEC) > 0.25 ) {
+
+			//for( int i=0; i<_arva_sensors.size(); i++ ) {	
+			//	if( !_arva_sensors[i].updated )
+			//		_arva_sensors.erase( _arva_sensors.begin()+i);
+			//}
+
+
 			if(!_new_s_data ) {
 				if( _wd_cnt++ > 2) { 
 					_detected_arva.header.seq = _seq++;
@@ -428,7 +439,7 @@ namespace gazebo
 						_detected_arva.arva_signals[i].direction.x = -1;
 						_detected_arva.arva_signals[i].direction.y = -1;
 						_detected_arva.arva_signals[i].direction.z = -1;
-					} //
+					} 
 					_arva_pub.publish( _detected_arva );
 				}
 			}

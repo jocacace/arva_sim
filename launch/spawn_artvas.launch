@@ -1,5 +1,0 @@
-<?xml version="1.0" ?>
-<launch>
-	<include file="$(find artva_gazebo_plugin)/launch/spawn_artvas_id1.launch" />
-	<include file="$(find artva_gazebo_plugin)/launch/spawn_artvas_id2.launch" />
-</launch>
