@@ -26,6 +26,7 @@
  *
 */
 
+
 #include <ros/ros.h>
 #include <boost/bind.hpp>
 #include <gazebo/gazebo.hh>
@@ -36,7 +37,6 @@
 #include <boost/algorithm/string.hpp>
 #include <gazebo/gazebo_client.hh>
 #include <gazebo/msgs/msgs.hh>
-#include <gazebo/math/gzmath.hh>
 #include <boost/bind.hpp>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
@@ -52,8 +52,6 @@
 #include <boost/algorithm/string.hpp> 
 
 using namespace std;
-
-#define SIMULATE_TRACE 1
 
 using Eigen::MatrixXd;
 using namespace Eigen;
@@ -104,7 +102,7 @@ namespace gazebo
 		private: vector< ARVA_TRANSMITTER > _arva_signal;	//the only transmitters to publish 0 < c < channels
 		private: Vector3f _receiver_pos;
 		private: Matrix3f _receiver_rot;
-		private: math::Pose _obj_pose;
+		ignition::math::Pose3d _obj_pose;
 		private: int _channels;
 
 		private: visualization_msgs::MarkerArray _arva_marker;
@@ -348,15 +346,15 @@ namespace gazebo
 		if( arva_found ) {
 
 			//Elab data
-			_obj_pose = this->model->GetWorldPose();
+			_obj_pose = this->model->WorldPose();
 
 			//---Receiver pose
-			_receiver_pos[0] = _obj_pose.pos.x;
-			_receiver_pos[1] = _obj_pose.pos.y;
-			_receiver_pos[2] = _obj_pose.pos.z;
-			float roll = _obj_pose.rot.GetRoll();
-			float pitch = _obj_pose.rot.GetPitch();
-			float yaw = _obj_pose.rot.GetYaw();
+			_receiver_pos[0] = _obj_pose.Pos()[0];
+			_receiver_pos[1] = _obj_pose.Pos()[1];
+			_receiver_pos[2] = _obj_pose.Pos()[2];
+			float roll = _obj_pose.Pos()[3];
+			float pitch = _obj_pose.Pos()[4];
+			float yaw = _obj_pose.Pos()[5];
 			Quaternionf q;
 			q = AngleAxisf(roll, Vector3f::UnitX()) * AngleAxisf(pitch, Vector3f::UnitY()) * AngleAxisf(yaw, Vector3f::UnitZ());
 			Eigen::Matrix3f Rt = q.normalized().toRotationMatrix();
@@ -371,12 +369,14 @@ namespace gazebo
 			vector <arva_sim::arva_data> swap_arva;
 			for(int i=0; i<_arva_sensors.size(); i++ ) {
 				get_arva_data( _arva_sensors[i].p, _arva_sensors[i].R, _receiver_pos, Rt, Hb, d, delta);
-				arva_sim::arva_data sig;
-				sig.id = _arva_sensors[i].id;
-				sig.distance = d;
-				sig.direction.x = Hb[0]; sig.direction.y = Hb[1]; sig.direction.z = Hb[2];
-				swap_arva.push_back(sig);
-				sensors_map.insert ( std::pair<int,float>(_arva_sensors[i].id, d ) );
+				if ( d >= 0 ) {
+					arva_sim::arva_data sig;
+					sig.id = _arva_sensors[i].id;
+					sig.distance = d;
+					sig.direction.x = Hb[0]; sig.direction.y = Hb[1]; sig.direction.z = Hb[2];
+					swap_arva.push_back(sig);
+					sensors_map.insert ( std::pair<int,float>(_arva_sensors[i].id, d ) );
+				}
 			}
 
 			std::set<std::pair<int, float>, comp> set(sensors_map.begin(), sensors_map.end());

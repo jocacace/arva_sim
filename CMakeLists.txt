@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(arva_sim)
 
+find_package( Gazebo REQUIRED)
 add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
@@ -52,7 +53,7 @@ target_link_libraries(arva_sim_transmitter ${catkin_LIBRARIES} ${GAZEBO_LIBRARIE
 add_library( arva_sim_receiver src/receiver_plugin.cpp )
 target_link_libraries(arva_sim_receiver ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_executable( arva_trace_example example/example.cpp )
-target_link_libraries(arva_trace_example ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+#add_executable( arva_trace_example example/example.cpp )
+#target_link_libraries(arva_trace_example ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 
