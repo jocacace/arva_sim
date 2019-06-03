@@ -62,22 +62,19 @@ namespace gazebo
 
     // Called by the world update start event
     public: void OnUpdate()  {
-		
-		clock_t end = clock();
-		if( (double(end - begin) / CLOCKS_PER_SEC) > 0.25 ) {
-			static tf::TransformBroadcaster br;
-			_obj_pose = this->model->WorldPose();
-			tf::Transform transform;
+			clock_t end = clock();
+			if( (double(end - begin) / CLOCKS_PER_SEC) > 0.25 ) {
+				static tf::TransformBroadcaster br;
+				_obj_pose = this->model->WorldPose();
+				tf::Transform transform;
+				transform.setOrigin( tf::Vector3(_obj_pose.Pos()[0], _obj_pose.Pos()[1], _obj_pose.Pos()[2]) );
+				tf::Quaternion q (_obj_pose.Rot().X(), _obj_pose.Rot().Y(), _obj_pose.Rot().Z(), _obj_pose.Rot().W()); 
 
-			transform.setOrigin( tf::Vector3(_obj_pose.Pos()[0], _obj_pose.Pos()[1], _obj_pose.Pos()[2]) );
-			tf::Quaternion q;
-			q.setRPY(_obj_pose.Pos()[3], _obj_pose.Pos()[4], _obj_pose.Pos()[5]);
-			transform.setRotation(q);
-			br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), _frame_id, _child_frame));
-			begin = clock();
+				transform.setRotation(q);
+				br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), _frame_id, _child_frame));
+				begin = clock();
+			}
 		}
-		
-	}
   };
 
   // Register this plugin with the simulator

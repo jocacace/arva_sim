@@ -87,16 +87,12 @@ namespace gazebo
 
     private: event::ConnectionPtr updateConnection;
 
-
-
 		private: vector<int> _arva_topic_id;
-
-		//private: vector<transport::SubscriberPtr> arva_subs; //list of arva data
 		private: vector< ros::Subscriber > _arva_subs;
 		private: ros::NodeHandle* _node_handle;
 		private: ros::Publisher _arva_pub;
 		private: clock_t begin; 
-    private: transport::NodePtr node;
+    	private: transport::NodePtr node;
 
 		private: vector< ARVA_TRANSMITTER > _arva_sensors; //all the transmitters detected at each cycle
 		private: vector< ARVA_TRANSMITTER > _arva_signal;	//the only transmitters to publish 0 < c < channels
@@ -252,7 +248,7 @@ namespace gazebo
 
 
 		vector< float > rand_color; rand_color.resize(3);
-  	srand (time(NULL));
+  		srand (time(NULL));
 		for(int i=0; i<_channels; i++ ) {
 			rand_color[0] = ((double) rand() / (RAND_MAX)) + 1;
 			rand_color[1] = ((double) rand() / (RAND_MAX)) + 1;
@@ -352,11 +348,14 @@ namespace gazebo
 			_receiver_pos[0] = _obj_pose.Pos()[0];
 			_receiver_pos[1] = _obj_pose.Pos()[1];
 			_receiver_pos[2] = _obj_pose.Pos()[2];
-			float roll = _obj_pose.Pos()[3];
-			float pitch = _obj_pose.Pos()[4];
-			float yaw = _obj_pose.Pos()[5];
+		
 			Quaternionf q;
-			q = AngleAxisf(roll, Vector3f::UnitX()) * AngleAxisf(pitch, Vector3f::UnitY()) * AngleAxisf(yaw, Vector3f::UnitZ());
+			q.x() = _obj_pose.Rot().X();
+			q.y() = _obj_pose.Rot().Y();
+			q.z() = _obj_pose.Rot().Z();
+			q.w() = _obj_pose.Rot().W();
+
+			//q = AngleAxisf(roll, Vector3f::UnitX()) * AngleAxisf(pitch, Vector3f::UnitY()) * AngleAxisf(yaw, Vector3f::UnitZ());
 			Eigen::Matrix3f Rt = q.normalized().toRotationMatrix();
 			//---
 
