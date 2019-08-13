@@ -105,6 +105,7 @@ namespace gazebo
 		private: ros::Publisher _arva_marker_pub;
 		private: int _seq;
 		private: string _frame_id;
+		private: string _sensor_name;
 		private: string _dir_path;
 		private: ros::Subscriber _tf_sub;
 		private: bool _new_s_data;
@@ -132,6 +133,7 @@ namespace gazebo
 
 			visualization_msgs::Marker arrow_marker;
 			arrow_marker.header.frame_id = _frame_id;
+
 
 			arrow_marker.header.stamp = ros::Time::now();
 
@@ -235,11 +237,11 @@ namespace gazebo
 
 		_channels = _sdf->Get<int>("channels");
 		_frame_id = _sdf->Get<string>("frame_id");
-
+		_sensor_name = _sdf->Get<string>("sensor_name");
 		_node_handle = new ros::NodeHandle();
 		_tf_sub = _node_handle->subscribe("/tf", 0, &ArvaReceiver::tf_cb, this );
-		_arva_pub = _node_handle->advertise<arva_sim::arva>("/arva", 0);
-		_arva_marker_pub = _node_handle->advertise<visualization_msgs::MarkerArray>("/arva_transmitter", 0);
+		_arva_pub = _node_handle->advertise<arva_sim::arva>(_sensor_name + "/signal", 0);
+		_arva_marker_pub = _node_handle->advertise<visualization_msgs::MarkerArray>(_sensor_name + "/visualization", 0);
 
 		begin = clock();
 

@@ -20,7 +20,7 @@ class artva_vel_ctrl():
 		#input_topic = rospy.get_param("~input_topic", "/joy")
 		#output_topic = rospy.get_param("~output_topic", "/cmd_vel")
 
-		rospy.Subscriber("arva", arva, self.artvaCb)
+		rospy.Subscriber("/arva/signal", arva, self.artvaCb)
 		self.vel_pub = rospy.Publisher("cmd_vel", Twist, queue_size=0) 
 		rospy.Subscriber("/mavros/global_position/local", Odometry, self.posCb)
 
@@ -101,7 +101,6 @@ class artva_vel_ctrl():
 				print "k: ", k, " d: ", d
 				vxy = numpy.array( [k*vers[0], k*vers[1]] )
 				vz = ks*(rs-self.z);
-				print "Vers: ", vers[0], " ", vers[1]
 
 				print "Z_e: ", (rs-self.z)
 
@@ -149,7 +148,7 @@ class artva_vel_ctrl():
 				c_vel.linear.z = 0.0
 
 			self.vel_pub.publish( c_vel )
-			#print "vel: ", c_vel
+
 
 			r.sleep()
 
