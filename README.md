@@ -102,3 +102,24 @@ The output of the _arva_sim_ package is provided using two ROS Topics, one for t
         float64 y
         float64 z
 * _visualization_msgs::MarkerArray_: _$sensor_name/visualization_: a set of Rviz markers shaped as arrows indicating the direction of the field
+
+### Toward automatic robotic Search & Rescue operations
+Two ROS nodes have been developed in the _arva_sim_ package in order to test the ARVA system with an Unmanned Aerial Vehicle (UAV) endowed with a ARVA receiver module. In our setup, the UAV autopilot is based on a [PX4](https://px4.io/) autopilot. To simulate the UAV in our simulation environment the [PX4 Gazebo Simulator](https://github.com/jocacace/Firmware) can be used. Follow the instruction in the README of the project to install all the dependencies and compile the simulation package. 
+To launch the simulation scene of the UAV endowed with the ARVA receiver use the following launch file:
+
+        $ roslaunch px4 iris_artva.launch
+        
+At this point, the simulation scene is ready. You only should spawn the desired ARVA transmitter. Let's say that we want to spawn the transmitter already configured with id 1
+
+        $ roslaunch arva_sim spawn_arva_id1.launch
+
+In order to send enable a velocity control of the UAV use this python script:
+
+        $ rosrun arva_sim cmd_vel.py
+        
+Finally, the ARVA data geerated by the _arva_sim_ receiver can be exploited to control the UAV allowing it to reach the transmitter using the following ROS node:
+
+        $ rosrun arva_sim simple_vel_ctrl.py
+
+
+
