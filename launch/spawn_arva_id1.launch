@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
 
-	<param name="robot_description" command="$(find xacro)/xacro --inorder  $(find arva_sim)/urdf/transmitter.urdf.xacro id:=1"/>
+	<param name="robot_description" command="$(find xacro)/xacro --inorder  $(find arva_sim)/urdf/transmitter.urdf.xacro id:=1 frame_id:=world"/>
 	<node name="spawn_artva_1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 20.0 -y -5.0 -z 1 -model artva1" 	respawn="false" output="screen">
 	</node>
 </launch>

@@ -20,7 +20,7 @@ class artva_vel_ctrl():
 		#input_topic = rospy.get_param("~input_topic", "/joy")
 		#output_topic = rospy.get_param("~output_topic", "/cmd_vel")
 
-		rospy.Subscriber("arva", arva, self.artvaCb)
+		rospy.Subscriber("/arva/signal", arva, self.artvaCb)
 		self.vel_pub = rospy.Publisher("cmd_vel", Twist, queue_size=0) 
 		rospy.Subscriber("/mavros/global_position/local", Odometry, self.posCb)
 

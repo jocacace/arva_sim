@@ -3,7 +3,8 @@
 <robot name="receiver" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg name="channels" default="4" />
 	<xacro:arg name="frame_id" default="arva" />
-	
+	<xacro:arg name="sensor_name" default="arva_receiver" />
+
 	<!-- Base Link -->
   <link name="receiver">
     <collision>
@@ -43,6 +44,7 @@
 	  <plugin filename="libarva_sim_receiver.so" name="receiver">
 			<channels>$(arg channels)</channels>
 			<frame_id>$(arg frame_id)</frame_id>
+			<sensor_name>$(arg sensor_name)</sensor_name>
     </plugin>
   </gazebo>
 </robot>

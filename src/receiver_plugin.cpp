@@ -111,6 +111,7 @@ namespace gazebo
 		private: ros::Publisher _arva_marker_pub;
 		private: int _seq;
 		private: string _frame_id;
+		private: string _sensor_name;
 		private: string _dir_path;
 		private: ros::Subscriber _tf_sub;
 		private: bool _new_s_data;
@@ -242,10 +243,13 @@ namespace gazebo
 		_channels = _sdf->Get<int>("channels");
 		_frame_id = _sdf->Get<string>("frame_id");
 
+
+		_sensor_name = _sdf->Get<string>("sensor_name");
+std::cout << "_sensor_name: " << _sensor_name << std::endl;
 		_node_handle = new ros::NodeHandle();
 		_tf_sub = _node_handle->subscribe("/tf", 0, &ArvaReceiver::tf_cb, this );
-		_arva_pub = _node_handle->advertise<arva_sim::arva>("/arva", 0);
-		_arva_marker_pub = _node_handle->advertise<visualization_msgs::MarkerArray>("/arva_transmitter", 0);
+		_arva_pub = _node_handle->advertise<arva_sim::arva>(_sensor_name + "/signal", 0);
+		_arva_marker_pub = _node_handle->advertise<visualization_msgs::MarkerArray>(_sensor_name + "/visualization", 0);
 
 		begin = clock();
 
@@ -424,12 +428,6 @@ namespace gazebo
 	
 		clock_t end = clock(); //elapsed time
 		if( (double(end - begin) / CLOCKS_PER_SEC) > 0.25 ) {
-
-			//for( int i=0; i<_arva_sensors.size(); i++ ) {	
-			//	if( !_arva_sensors[i].updated )
-			//		_arva_sensors.erase( _arva_sensors.begin()+i);
-			//}
-
 
 			if(!_new_s_data ) {
 				if( _wd_cnt++ > 2) { 

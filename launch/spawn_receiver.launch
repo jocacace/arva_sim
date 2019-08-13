@@ -1,12 +1,11 @@
 <?xml version="1.0" ?>
 <launch>
 
-	<param name="robot_description" command="$(find xacro)/xacro --inorder $(find arva_sim)/urdf/receiver.urdf.xacro channels:=4 frame_id:=world"/>
+	<param name="robot_description" command="$(find xacro)/xacro --inorder $(find arva_sim)/urdf/receiver.urdf.xacro channels:=4 frame_id:=arva_receiver sensor:=arva_receiver"/>
 	<node name="spawn_artva_receiver" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 0.0 -y 0.0 -z 0.0 -model artva_receiver" respawn="false" output="screen">
 	</node>
-	<!--
+	
 	<include file="$(find arva_sim)/launch/rviz.launch"/>
-	-->
-
+	
 
 </launch>

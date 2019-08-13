@@ -3,7 +3,8 @@ Panels:
     Help Height: 89
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /MarkerArray1
       Splitter Ratio: 0.489675522
     Tree Height: 774
   - Class: rviz/Selection
@@ -25,6 +26,8 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: ""
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -75,7 +78,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /arva_transmitter
+      Marker Topic: /arva/visualization
       Name: MarkerArray
       Namespaces:
         arva_receiver: true
@@ -116,9 +119,9 @@ Visualization Manager:
       Near Clip Distance: 0.00999999978
       Pitch: 1.12476099
       Position:
-        X: -2.63614917
-        Y: 13.1573811
-        Z: 27.8609085
+        X: -0.893426418
+        Y: 5.40627909
+        Z: 14.2444315
       Target Frame: <Fixed Frame>
       Value: FPS (rviz)
       Yaw: 4.90333319
