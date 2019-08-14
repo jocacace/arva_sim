@@ -1,5 +1,5 @@
 # arva_sim
-This ROS package provides the implementation of a Gazebo plugins to simulate the behavior of an [ARVA](https://en.wikipedia.org/wiki/Avalanche_transceiver) transceiver systems. ARVA means _Appareil  de  Recherche  de  Victims  en  Avalanche_ and represents the forefront technology in rescuing avalanche victims. In particular, the proposed package contains two different plugins: the _receiver_ and _transmitter_. 
+This ROS package provides the implementation of a Gazebo plugins to simulate the behavior of an [ARVA](https://en.wikipedia.org/wiki/Avalanche_transceiver) transceiver systems. ARVA means _Appareil de Recherche de  Victims en  Avalanche_ and represents the forefront technology in rescuing avalanche victims. In particular, the proposed package contains two different plugins: the _receiver_ and _transmitter_. 
 
 ### Background
 ARVA system is one of the forefront technologies nowadays used in _Search & Rescue_ operations in case of avalanches. The ARVA devices consist of two main elements, i.e. a transmitter and a receiver, which are operated alternatively. Excursionists and skiers who use the ARVA normally set in the transmitting mode so that, in the accidental case of avalanche, the system is already set in the right operative mode. In the receiver mode, the ARVA devices provide information about the electromagnetic field, emitted by the transmitter, which is exploited to guide the rescuer toward the victim. 
@@ -10,13 +10,15 @@ The working principle of this sensor is based on the detection of the magnetic l
 In the previous figure we assume that one transmitter is placed at the center of the workspace.
 
 ### Installation instructions
-The _arva_sim_ package is compatible both with ROS _kinetci kame_ and _melodic_ distributions. In our context, the main difference in these distributions are related to the ROS Gazebo verison. In particular, the default version of Gazebo ROS installed are Gazebo 7 and 9, respectively. In order to use _arva_sim_ package with ROS kinetic Kame and Gazebo 8, you should the following branch: [Gazebo7](https://github.com/jocacace/arva_sim/tree/gazebo7-devel), while use the following branch [Gazebo9](https://github.com/jocacace/arva_sim/tree/gazebo9-devel) if you ROS system is based on Gazebo 9 instead.
+The _arva_sim_ package is compatible both with ROS _kinetci kame_ and _melodic_ distributions. In our context, the main difference in these distributions are related to the ROS Gazebo version. In particular, the default version of Gazebo ROS installed are Gazebo 7 and 9, respectively. In order to use _arva_sim_ package with ROS kinetic Kame and Gazebo 8, you should the following branch: [Gazebo7](https://github.com/jocacace/arva_sim/tree/gazebo7-devel), while use the following branch [Gazebo9](https://github.com/jocacace/arva_sim/tree/gazebo9-devel) if you ROS system is based on Gazebo 9 instead.
 
 Assuming you are running Ubuntu Linux OS, the installation steps are quite simple as seen below:
-1. Install the desired ROS distribution. To install ROS kinetic kame, follow the instraction at this wiki page: [ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu), while to install ROS Melodic, following the instructions at: [ROS Melodic installation](http://wiki.ros.org/melodic/Installation/Ubuntu)
+1. Install the desired ROS distribution. To install ROS kinetic kame, follow the instruction at this wiki page: [ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu), while to install ROS Melodic, following the instructions at: [ROS Melodic installation](http://wiki.ros.org/melodic/Installation/Ubuntu)
 2. Setup your ROS catkin workspace, by typing in the 
 
         $ mkdir -p ∼/catkin_ws/src
+        $ cd ~catkin_ws/src
+        $ catkin_init_workspace
         $ cd ∼/catkin_ws
         $ catkin_make
         $ source devel/setup.bash
@@ -46,7 +48,7 @@ After compiled this package using the _catkin_make_ command, you are able to end
 
 ### Starting with a test
 
-The ARVA plugin can be tested using the sample launch files contained in the _arva_sim_ package. In particular, a set of files has been setup to spawned the whole ARVA system (both receives and transmitter), displaying the output of the sensor.
+The ARVA plugins can be tested using the sample launch files contained in the _arva_sim_ package. In particular, a set of files has been setup to spawned the whole ARVA system (both receives and transmitter), displaying the output of the sensor.
 In particular, to setup the world devoted to host the ARVA system use the following file:
 
         $ roslaunch arva_sim arva_world.launch
@@ -72,7 +74,7 @@ Different parameters are used to configure transmitter and receiver. For the tra
 * frame_id: The reference frame of the receiver data
 * sensor_name: the name of the receiver device
 
-These parameters are specified in the xacro file describing the ARVA modules. One way to set the value of these parameters is to specify their value during the concersion in a URDF file (needed to spawn the object in the gazebo scene). To spawn a receiver able to detect 4 receivers at the same tima, generating data in the _arva_receiver_ reference frame and with name: arva_receiver, paste the following lines in your launch file: 
+These parameters are specified in the xacro file describing the ARVA modules. One way to set the value of these parameters is to specify their value during the conversion in a URDF file (needed to spawn the object in the gazebo scene). To spawn a receiver able to detect 4 receivers at the same time, generating data in the _arva_receiver_ reference frame and with name: arva_receiver, paste the following lines in your launch file: 
 ```xml
 <param name="robot_description" command="$(find xacro)/xacro --inorder $(find arva_sim)/urdf/receiver.urdf.xacro channels:=4 frame_id:=arva_receiver sensor_name:=arva_receiver"/>
 <node name="spawn_artva_1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 20.0 -y -5.0 -z 1 -model artva1" 	respawn="false" output="screen" />
@@ -87,7 +89,7 @@ While, to spawn a transmitter with id 1 generating data in the _world_ reference
 
 #### Output
 
-The output of the _arva_sim_ package is provided using two ROS Topics, one for the signal elaboration and one for the visualization of the ARVA data. The name of such topics depend from the vlaue of the parameters specified in the URDF file. In particular, the transmitter plugin publishes the following topics:
+The output of the _arva_sim_ package is provided using two ROS Topics, one for the signal elaboration and one for the visualization of the ARVA data. The name of such topics depend from the value of the parameters specified in the URDF file. In particular, the transmitter plugin publishes the following topics:
 * _arva_sim::arva_:  _$sensor_name_/signal: this topic contains the direction to follow to reach all the received transmitters. This is a custom ROS message implemented in the _arva_sim_ package. The data stracture of the message is defined as follow: 
     ```c
     std_msgs/Header header
