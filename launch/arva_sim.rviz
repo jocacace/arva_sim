@@ -81,7 +81,7 @@ Visualization Manager:
       Marker Topic: /arva/visualization
       Name: MarkerArray
       Namespaces:
-        arva_receiver: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true

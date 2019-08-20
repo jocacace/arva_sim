@@ -245,7 +245,7 @@ namespace gazebo
 
 
 		_sensor_name = _sdf->Get<string>("sensor_name");
-std::cout << "_sensor_name: " << _sensor_name << std::endl;
+
 		_node_handle = new ros::NodeHandle();
 		_tf_sub = _node_handle->subscribe("/tf", 0, &ArvaReceiver::tf_cb, this );
 		_arva_pub = _node_handle->advertise<arva_sim::arva>(_sensor_name + "/signal", 0);
